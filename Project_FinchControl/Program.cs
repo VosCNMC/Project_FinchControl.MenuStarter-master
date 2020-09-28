@@ -191,7 +191,6 @@ namespace Project_FinchControl
             finchRobot.setMotors(0, 0);
 
 
-
             DisplayContinuePrompt();
 
         }
