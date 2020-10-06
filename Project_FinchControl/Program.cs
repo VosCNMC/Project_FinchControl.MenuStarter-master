@@ -140,8 +140,8 @@ namespace Project_FinchControl
                 //
                 Console.WriteLine("\ta) Light and Sound");
                 Console.WriteLine("\tb) Dance With Me! ");
-                Console.WriteLine("\tc) ");
-                Console.WriteLine("\td) ");
+                Console.WriteLine("\tc) Sing A Song!");
+                Console.WriteLine("\td) Mix it up!");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -160,7 +160,7 @@ namespace Project_FinchControl
                         break;
 
                     case "c":
-
+                        MixItUp(finchRobot);
                         break;
 
                     case "d":
@@ -181,14 +181,46 @@ namespace Project_FinchControl
             } while (!quitTalentShowMenu);
         }
 
+        // Note: For some reason, I cannot debug this as the code will sometimes work and sometimes won't, I've tried everything and it doesn't seem to want to full run sometimes!
         private static void DisplayDanceWithMe(Finch finchRobot)
         {
             DisplayScreenHeader("Dance With Me!");
 
+            Console.WriteLine("\tThe Finch robot will do a quick move!");
+            for (int i = 0; i < 3; i++)
+            {
+                finchRobot.setMotors(255, -255);
+                finchRobot.wait(100);
+                finchRobot.setMotors(0, 0);
+                finchRobot.wait(100);
+                finchRobot.setMotors(-255, 255);
+                finchRobot.wait(100);
+                finchRobot.setMotors(0, 0);
+                finchRobot.wait(100);
+            }
+            
 
-            finchRobot.setMotors(255, -255);
-            finchRobot.wait(4000);
-            finchRobot.setMotors(0, 0);
+            DisplayContinuePrompt();
+
+        }
+        private static void MixItUp(Finch finchRobot)
+        {
+            DisplayScreenHeader("Mix it up!");
+            Console.WriteLine("\tThe Finch robot will glow and dance !");
+            for (int i = 0; i < 3; i++)
+            {
+                finchRobot.setMotors(255, -255);
+                finchRobot.wait(100);
+                finchRobot.setLED(i * 200, i * 100, 0);
+                finchRobot.setMotors(0, 0);
+                finchRobot.wait(100);
+                finchRobot.setLED(200, i * 40, i * 15);
+                finchRobot.setMotors(-255, 255);
+                finchRobot.wait(100);
+                finchRobot.setMotors(0, 0);
+                finchRobot.wait(100);
+                finchRobot.setLED(0,0,0)
+            }
 
 
             DisplayContinuePrompt();
@@ -207,14 +239,45 @@ namespace Project_FinchControl
 
             DisplayScreenHeader("Light and Sound");
 
-            Console.WriteLine("\tThe Finch robot will not show off its glowing talent!");
+            Console.WriteLine("\tThe Finch robot will now show off its glowing talent!");
             DisplayContinuePrompt();
 
-            for (int lightSoundLevel = 0; lightSoundLevel < 255; lightSoundLevel++)
+            for (int lightSoundLevel = 0; lightSoundLevel < 10; lightSoundLevel++)
             {
                 finchRobot.setLED(lightSoundLevel, lightSoundLevel, lightSoundLevel);
                 finchRobot.noteOn(lightSoundLevel * 100);
+                finchRobot.wait(200);
+                finchRobot.setLED(0, 0, 0);
+                finchRobot.noteOff();
+                finchRobot.wait(100);
             }
+
+            DisplayMenuPrompt("Talent Show Menu");
+        }
+
+        static void SingASong(Finch finchRobot)
+        {
+            Console.CursorVisible = false;
+
+            DisplayScreenHeader("Sing a Song!");
+
+            Console.WriteLine("\tThe Finch robot will now sing a small tune!");
+            DisplayContinuePrompt();
+
+            finchRobot.noteOn(1600);
+            finchRobot.wait(1000);
+            finchRobot.noteOff();
+            finchRobot.noteOn(800);
+            finchRobot.wait(1000);
+            finchRobot.noteOff();
+            finchRobot.noteOn(650);
+            finchRobot.wait(1000);
+            finchRobot.noteOff();
+            finchRobot.noteOn(1050);
+            finchRobot.wait(1000);
+            finchRobot.noteOff();
+            finchRobot.wait(1000);
+
 
             DisplayMenuPrompt("Talent Show Menu");
         }
