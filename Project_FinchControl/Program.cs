@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using FinchAPI;
 
+
 namespace Project_FinchControl
 {
 
@@ -117,6 +118,64 @@ namespace Project_FinchControl
             } while (!quitApplication);
         }
 
+        #region DATA RECORDER
+
+        void DataRecorderDisplayMenuScreen(Finch finchRobot)
+        {
+            //Variables for Method
+            int numberOfDataPoints;
+            double dataPointFrequency;
+            double[] tempatures;
+
+            bool quitMenu = false;
+            string menuChoice;
+            do 
+            { 
+                switch (menuChoice)
+                {
+                case "a":
+                    DisplayConnectFinchRobot(finchRobot);
+                    break;
+
+                case "b":
+                    DisplayTalentShowMenuScreen(finchRobot);
+                    break;
+
+                    case "c":
+
+                        break;
+
+                    case "d":
+
+                        break;
+
+                    case "e":
+
+                        break;
+
+                    case "f":
+                        DisplayDisconnectFinchRobot(finchRobot);
+                        break;
+
+                    case "q":
+                        DisplayDisconnectFinchRobot(finchRobot);
+                        quitApplication = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+            } while (!quitApplication);
+        }
+}
+
+
+    }
+        #endregion
+
         #region TALENT SHOW
 
         /// <summary>
@@ -160,11 +219,11 @@ namespace Project_FinchControl
                         break;
 
                     case "c":
-                        MixItUp(finchRobot);
+                        SingASong(finchRobot);
                         break;
 
                     case "d":
-
+                        MixItUp(finchRobot);
                         break;
 
                     case "q":
@@ -206,7 +265,9 @@ namespace Project_FinchControl
         private static void MixItUp(Finch finchRobot)
         {
             DisplayScreenHeader("Mix it up!");
-            Console.WriteLine("\tThe Finch robot will glow and dance !");
+
+
+            Console.WriteLine("\tThe Finch robot will glow and dance!");
             for (int i = 0; i < 3; i++)
             {
                 finchRobot.setMotors(255, -255);
@@ -219,7 +280,7 @@ namespace Project_FinchControl
                 finchRobot.wait(100);
                 finchRobot.setMotors(0, 0);
                 finchRobot.wait(100);
-                finchRobot.setLED(0,0,0)
+                finchRobot.setLED(0, 0, 0);
             }
 
 
@@ -303,7 +364,7 @@ namespace Project_FinchControl
 
             finchRobot.disConnect();
 
-            Console.WriteLine("\tThe Finch robot is now disconnect.");
+            Console.WriteLine("\tThe Finch robot is now disconnected.");
 
             DisplayMenuPrompt("Main Menu");
         }
@@ -411,5 +472,5 @@ namespace Project_FinchControl
         }
 
         #endregion
-    }
-}
+    
+
