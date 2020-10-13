@@ -140,9 +140,9 @@ namespace Project_FinchControl
                 // get user menu choice
                 //
                 Console.WriteLine("\ta) Light and Sound");
-                Console.WriteLine("\tb) ");
-                Console.WriteLine("\tc) ");
-                Console.WriteLine("\td) ");
+                Console.WriteLine("\tb) Dance with me");
+                Console.WriteLine("\tc) Sing a Song");
+                Console.WriteLine("\td) Mixing it up!");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -193,7 +193,7 @@ namespace Project_FinchControl
 
                 DisplayScreenHeader("Light and Sound");
 
-                Console.WriteLine("\tThe Finch robot will not show off its glowing talent!");
+                Console.WriteLine("\tThe Finch robot will now show off its glowing talent!");
                 DisplayContinuePrompt();
 
                 for (int lightSoundLevel = 0; lightSoundLevel < 10; lightSoundLevel++)
@@ -350,7 +350,10 @@ namespace Project_FinchControl
             } while (!quitMenu);
 
         }
-
+        /// <summary>
+        /// Displays Recieved Data in a table for user
+        /// </summary>
+        /// <param name="temperatures"></param>
         static void DataRecorderDisplayData(double[] temperatures)
         {
             DisplayScreenHeader("Showing Data:");
@@ -382,12 +385,20 @@ namespace Project_FinchControl
             {
                 Console.WriteLine(
                     (i + 1).ToString().PadLeft(15) +
-                    temperatures[i].ToString("n2").PadLeft(15)
+                    temperatures[i].ToString("n2") + "°f" + "".PadLeft(15) 
                     );
             }
-
+            Console.WriteLine();
+            Console.WriteLine("The Average of your temperatures was: " + temperatures.Average().ToString("n2")+ "°f");
         }
 
+        /// <summary>
+        /// Records Data of Surrounding temperature of Finch Robot
+        /// </summary>
+        /// <param name="numberOfDataPoints"></param>
+        /// <param name="dataPointFrequency"></param>
+        /// <param name="finchRobot"></param>
+        /// <returns>Records Temp. of surrounding area around Finch</returns>
         static double[] DataRecorderDisplayGetData(int numberOfDataPoints, double dataPointFrequency, Finch finchRobot)
         {
             double[] temperatures = new double[numberOfDataPoints];
@@ -402,8 +413,11 @@ namespace Project_FinchControl
 
             for (int i = 0; i < numberOfDataPoints; i++)
             {
-                temperatures[i] = finchRobot.getTemperature();
-                Console.WriteLine($"\tReading {i + 1}: {temperatures[i].ToString("n2")}");
+                double preSwappedTemp = 0;
+
+                //conversionCtoF(preSwappedTemp, finchRobot);
+                temperatures[i] = (finchRobot.getTemperature() * 1.8) + 32;
+                Console.WriteLine($"\tReading {i + 1}   :   {temperatures[i].ToString("n2")}°f" );
                 int waitInSeconds = (int)(dataPointFrequency * 1000);
                 finchRobot.wait(waitInSeconds);
             }
@@ -415,7 +429,22 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
             return temperatures;
         }
+        /// <summary>
+        /// Uses conversion math to convert C to F for user
+        /// </summary>
+        /// <param name="preSwappedTemp"></param>
+        /// <param name="finchRobot"></param>
+        /// <returns>conversion math to convert C to F for user</returns>
+        static double conversionCtoF(double preSwappedTemp, Finch finchRobot)
+        {
+            preSwappedTemp = (finchRobot.getTemperature() * 1.8) + 32;
+            return preSwappedTemp;
+        }
 
+        /// <summary>
+        /// Gets frequency input from user
+        /// </summary>
+        /// <returns>Frequency input from user</returns>
         static double DataRecorderDisplayGetDataPointFrequency()
         {
             double dataPointFrequency;
@@ -423,11 +452,11 @@ namespace Project_FinchControl
             string userResponse;
             int userAnswer;
             int num = -1;
-            DisplayScreenHeader("Number of Data Points");
+            DisplayScreenHeader("Frequency of Data points");
             Console.WriteLine("Frequency of data points: ");
 
             //ASKS FOR USER INPUT
-            Console.WriteLine("How many data points would you like? (whole number)");
+            Console.WriteLine("How many seconds would you like between each reading? (can be a decimal!)");
             userResponse = Console.ReadLine();
 
             // DETECTS TO SEE IF ANSWER IS VALID
@@ -437,8 +466,8 @@ namespace Project_FinchControl
                 while (answer != true)
                 {
                     Console.Clear();
-                    Console.WriteLine("Error! please enter a valid whole number!\n");
-                    Console.WriteLine("How many data points would you like? (whole number)");
+                    Console.WriteLine("Error! please enter a valid number!\n");
+                    Console.WriteLine("How many seconds would you like between each reading? (whole number)");
                     // USER INPUT 
                     userResponse = Console.ReadLine();
                     // validate user input
@@ -535,7 +564,9 @@ namespace Project_FinchControl
             robotConnected = finchRobot.connect();
             finchRobot.connect();
             // TODO test connection and provide user feedback - text, lights, sounds
-
+            finchRobot.noteOn( 300);
+            finchRobot.setLED(0, 0, 255);
+            finchRobot.wait(4000);
             DisplayMenuPrompt("Main Menu");
 
             //
