@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FinchAPI;
-
 
 namespace Project_FinchControl
 {
@@ -15,7 +15,7 @@ namespace Project_FinchControl
     // Application Type: Console
     // Author: Velis, John
     // Dated Created: 1/22/2020
-    // Last Modified: 9/28/2020
+    // Last Modified: 1/25/2020
     //
     // **************************************************
 
@@ -84,11 +84,11 @@ namespace Project_FinchControl
                         break;
 
                     case "b":
-                        DisplayTalentShowMenuScreen(finchRobot);
+                        TalentShowDisplayMenuScreen(finchRobot);
                         break;
 
                     case "c":
-
+                        dataRecorderDisplayMenuScreen(finchRobot);
                         break;
 
                     case "d":
@@ -117,64 +117,6 @@ namespace Project_FinchControl
 
             } while (!quitApplication);
         }
-
-        #region DATA RECORDER
-
-        void DataRecorderDisplayMenuScreen(Finch finchRobot)
-        {
-            //Variables for Method
-            int numberOfDataPoints;
-            double dataPointFrequency;
-            double[] tempatures;
-
-            bool quitMenu = false;
-            string menuChoice;
-            do 
-            { 
-                switch (menuChoice)
-                {
-                case "a":
-                    DisplayConnectFinchRobot(finchRobot);
-                    break;
-
-                case "b":
-                    DisplayTalentShowMenuScreen(finchRobot);
-                    break;
-
-                    case "c":
-
-                        break;
-
-                    case "d":
-
-                        break;
-
-                    case "e":
-
-                        break;
-
-                    case "f":
-                        DisplayDisconnectFinchRobot(finchRobot);
-                        break;
-
-                    case "q":
-                        DisplayDisconnectFinchRobot(finchRobot);
-                        quitApplication = true;
-                        break;
-
-                    default:
-                        Console.WriteLine();
-                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
-                        DisplayContinuePrompt();
-                        break;
-                }
-            } while (!quitApplication);
-        }
-}
-
-
-    }
-        #endregion
 
         #region TALENT SHOW
 
@@ -183,7 +125,7 @@ namespace Project_FinchControl
         /// *                     Talent Show Menu                          *
         /// *****************************************************************
         /// </summary>
-        static void DisplayTalentShowMenuScreen(Finch finchRobot)
+        static void TalentShowDisplayMenuScreen(Finch finchRobot)
         {
             Console.CursorVisible = true;
 
@@ -198,9 +140,9 @@ namespace Project_FinchControl
                 // get user menu choice
                 //
                 Console.WriteLine("\ta) Light and Sound");
-                Console.WriteLine("\tb) Dance With Me! ");
-                Console.WriteLine("\tc) Sing A Song!");
-                Console.WriteLine("\td) Mix it up!");
+                Console.WriteLine("\tb) ");
+                Console.WriteLine("\tc) ");
+                Console.WriteLine("\td) ");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -235,116 +177,319 @@ namespace Project_FinchControl
                         Console.WriteLine("\tPlease enter a letter for the menu choice.");
                         DisplayContinuePrompt();
                         break;
+
+                }
+            } while (!quitTalentShowMenu);
+
+            /// <summary>
+            /// *****************************************************************
+            /// *               Talent Show > Light and Sound                   *
+            /// *****************************************************************
+            /// </summary>
+            /// <param name="finchRobot">finch robot object</param>
+            static void DisplayLightAndSound(Finch finchRobot)
+            {
+                Console.CursorVisible = false;
+
+                DisplayScreenHeader("Light and Sound");
+
+                Console.WriteLine("\tThe Finch robot will not show off its glowing talent!");
+                DisplayContinuePrompt();
+
+                for (int lightSoundLevel = 0; lightSoundLevel < 10; lightSoundLevel++)
+                {
+                    finchRobot.setLED(lightSoundLevel, lightSoundLevel, lightSoundLevel);
+                    finchRobot.noteOn(lightSoundLevel * 100);
+                    finchRobot.wait(200);
+                    finchRobot.setLED(0, 0, 0);
+                    finchRobot.noteOff();
+                    finchRobot.wait(100);
                 }
 
-            } while (!quitTalentShowMenu);
-        }
-
-        // Note: For some reason, I cannot debug this as the code will sometimes work and sometimes won't, I've tried everything and it doesn't seem to want to full run sometimes!
-        private static void DisplayDanceWithMe(Finch finchRobot)
-        {
-            DisplayScreenHeader("Dance With Me!");
-
-            Console.WriteLine("\tThe Finch robot will do a quick move!");
-            for (int i = 0; i < 3; i++)
-            {
-                finchRobot.setMotors(255, -255);
-                finchRobot.wait(100);
-                finchRobot.setMotors(0, 0);
-                finchRobot.wait(100);
-                finchRobot.setMotors(-255, 255);
-                finchRobot.wait(100);
-                finchRobot.setMotors(0, 0);
-                finchRobot.wait(100);
+                DisplayMenuPrompt("Talent Show Menu");
             }
-            
-
-            DisplayContinuePrompt();
-
-        }
-        private static void MixItUp(Finch finchRobot)
-        {
-            DisplayScreenHeader("Mix it up!");
-
-
-            Console.WriteLine("\tThe Finch robot will glow and dance!");
-            for (int i = 0; i < 3; i++)
+            // DANCE WITH ME METHOD
+            static void DisplayDanceWithMe(Finch finchRobot)
             {
-                finchRobot.setMotors(255, -255);
-                finchRobot.wait(100);
-                finchRobot.setLED(i * 200, i * 100, 0);
-                finchRobot.setMotors(0, 0);
-                finchRobot.wait(100);
-                finchRobot.setLED(200, i * 40, i * 15);
-                finchRobot.setMotors(-255, 255);
-                finchRobot.wait(100);
-                finchRobot.setMotors(0, 0);
-                finchRobot.wait(100);
-                finchRobot.setLED(0, 0, 0);
+                DisplayScreenHeader("Dance With Me!");
+
+                Console.WriteLine("\tThe Finch robot will do a quick move!");
+                for (int i = 0; i < 3; i++)
+                {
+                    finchRobot.setMotors(255, -255);
+                    finchRobot.wait(100);
+                    finchRobot.setMotors(0, 0);
+                    finchRobot.wait(100);
+                    finchRobot.setMotors(-255, 255);
+                    finchRobot.wait(100);
+                    finchRobot.setMotors(0, 0);
+                    finchRobot.wait(100);
+                }
+
+
+                DisplayContinuePrompt();
             }
 
+            ///MIX IT UP METHOD
+            static void MixItUp(Finch finchRobot)
+            {
+                DisplayScreenHeader("Mix it up!");
+
+
+                Console.WriteLine("\tThe Finch robot will glow and dance!");
+                for (int i = 0; i < 3; i++)
+                {
+                    finchRobot.setMotors(255, -255);
+                    finchRobot.wait(100);
+                    finchRobot.setLED(i * 200, i * 100, 0);
+                    finchRobot.setMotors(0, 0);
+                    finchRobot.wait(100);
+                    finchRobot.setLED(200, i * 40, i * 15);
+                    finchRobot.setMotors(-255, 255);
+                    finchRobot.wait(100);
+                    finchRobot.setMotors(0, 0);
+                    finchRobot.wait(100);
+                    finchRobot.setLED(0, 0, 0);
+                }
+
+
+                DisplayContinuePrompt();
+
+            }
+            //SING A SONG METHOD
+            static void SingASong(Finch finchRobot)
+            {
+                Console.CursorVisible = false;
+
+                DisplayScreenHeader("Sing a Song!");
+
+                Console.WriteLine("\tThe Finch robot will now sing a small tune!");
+                DisplayContinuePrompt();
+
+                finchRobot.noteOn(1600);
+                finchRobot.wait(1000);
+                finchRobot.noteOff();
+                finchRobot.noteOn(800);
+                finchRobot.wait(1000);
+                finchRobot.noteOff();
+                finchRobot.noteOn(650);
+                finchRobot.wait(1000);
+                finchRobot.noteOff();
+                finchRobot.noteOn(1050);
+                finchRobot.wait(1000);
+                finchRobot.noteOff();
+                finchRobot.wait(1000);
+
+
+                DisplayMenuPrompt("Talent Show Menu");
+            }
+        }
+        #endregion
+
+        #region DATA RECORDER
+
+        static void dataRecorderDisplayMenuScreen(Finch finchRobot)
+        {
+            int numberOfDataPoints = 0;
+            double dataPointFrequency = 0;
+            double[] temperatures = null;
+
+            Console.CursorVisible = true;
+
+            bool quitMenu = false;
+            string menuChoice;
+
+            do
+            {
+                DisplayScreenHeader("Data Recorder Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Number of Data Points");
+                Console.WriteLine("\tb) Frequency of Data Points");
+                Console.WriteLine("\tc) Get Data");
+                Console.WriteLine("\td) Show Data");
+                Console.WriteLine("\tq) Main Menu");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        // Collects Number of Data points user would like
+                        numberOfDataPoints = DataRecorderDisplayGetNumberOfDataPoints();
+                        break;
+
+                    case "b":
+                        dataPointFrequency = DataRecorderDisplayGetDataPointFrequency();
+                        break;
+
+                    case "c":
+                        temperatures = DataRecorderDisplayGetData(numberOfDataPoints, dataPointFrequency, finchRobot);
+                        break;
+
+                    case "d":
+                        DataRecorderDisplayData(temperatures);
+                        break;
+
+                    case "q":
+                        quitMenu = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+
+                }
+            } while (!quitMenu);
+
+        }
+
+        static void DataRecorderDisplayData(double[] temperatures)
+        {
+            DisplayScreenHeader("Showing Data:");
+
+            DataReadingDisplayTable(temperatures);
 
             DisplayContinuePrompt();
+        }
 
+        static void DataReadingDisplayTable(double[] temperatures)
+        {
+
+            //
+            // display table headers
+            //
+            Console.WriteLine(
+                "Recording #".PadLeft(15) +
+                "Temp".PadLeft(15)
+                );
+            Console.WriteLine(
+                "...........".PadLeft(15) +
+                "-----------".PadLeft(15)
+                );
+
+            //
+            // displays table data
+            //
+            for (int i = 0; i < temperatures.Length; i++)
+            {
+                Console.WriteLine(
+                    (i + 1).ToString().PadLeft(15) +
+                    temperatures[i].ToString("n2").PadLeft(15)
+                    );
+            }
+
+        }
+
+        static double[] DataRecorderDisplayGetData(int numberOfDataPoints, double dataPointFrequency, Finch finchRobot)
+        {
+            double[] temperatures = new double[numberOfDataPoints];
+
+            DisplayScreenHeader("Get Data");
+
+            Console.WriteLine($"\tNumber of data points: {numberOfDataPoints}");
+            Console.WriteLine($"\tData Point Frequency: {dataPointFrequency}");
+            Console.WriteLine();
+            Console.WriteLine("\tThe Finch Robot is ready to begin recording the temperature data.");
+            DisplayContinuePrompt();
+
+            for (int i = 0; i < numberOfDataPoints; i++)
+            {
+                temperatures[i] = finchRobot.getTemperature();
+                Console.WriteLine($"\tReading {i + 1}: {temperatures[i].ToString("n2")}");
+                int waitInSeconds = (int)(dataPointFrequency * 1000);
+                finchRobot.wait(waitInSeconds);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("\tTable of Temperatures");
+            Console.WriteLine();
+            DataReadingDisplayTable(temperatures);
+            DisplayContinuePrompt();
+            return temperatures;
+        }
+
+        static double DataRecorderDisplayGetDataPointFrequency()
+        {
+            double dataPointFrequency;
+            bool answer = false;
+            string userResponse;
+            int userAnswer;
+            int num = -1;
+            DisplayScreenHeader("Number of Data Points");
+            Console.WriteLine("Frequency of data points: ");
+
+            //ASKS FOR USER INPUT
+            Console.WriteLine("How many data points would you like? (whole number)");
+            userResponse = Console.ReadLine();
+
+            // DETECTS TO SEE IF ANSWER IS VALID
+            answer = double.TryParse(userResponse, out dataPointFrequency);
+            if (answer != true)
+            {
+                while (answer != true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Error! please enter a valid whole number!\n");
+                    Console.WriteLine("How many data points would you like? (whole number)");
+                    // USER INPUT 
+                    userResponse = Console.ReadLine();
+                    // validate user input
+                    answer = double.TryParse(userResponse, out dataPointFrequency);
+
+                }
+            }
+            // RETURN VALUE
+            return dataPointFrequency;
         }
 
         /// <summary>
-        /// *****************************************************************
-        /// *               Talent Show > Light and Sound                   *
-        /// *****************************************************************
+        /// Get's the number of data points from user
         /// </summary>
-        /// <param name="finchRobot">finch robot object</param>
-        static void DisplayLightAndSound(Finch finchRobot)
+        /// <returns># of data points</returns>
+        static int DataRecorderDisplayGetNumberOfDataPoints()
         {
-            Console.CursorVisible = false;
+            int numberOfDataPoints;
+            bool answer = false;
+            string userResponse;
+            int userAnswer;
+            int num = -1;
+            DisplayScreenHeader("Number of Data Points");
+            Console.WriteLine("Number of data points: ");
 
-            DisplayScreenHeader("Light and Sound");
+            //ASKS FOR USER INPUT
+            Console.WriteLine("How many data points would you like? (whole number)");
+            userResponse = Console.ReadLine();
 
-            Console.WriteLine("\tThe Finch robot will now show off its glowing talent!");
-            DisplayContinuePrompt();
-
-            for (int lightSoundLevel = 0; lightSoundLevel < 10; lightSoundLevel++)
+            // DETECTS TO SEE IF ANSWER IS VALID
+            answer = int.TryParse(userResponse, out numberOfDataPoints);
+            if (answer != true)
             {
-                finchRobot.setLED(lightSoundLevel, lightSoundLevel, lightSoundLevel);
-                finchRobot.noteOn(lightSoundLevel * 100);
-                finchRobot.wait(200);
-                finchRobot.setLED(0, 0, 0);
-                finchRobot.noteOff();
-                finchRobot.wait(100);
+                while (answer != true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Error! please enter a valid whole number!\n");
+                    Console.WriteLine("How many data points would you like? (whole number)");
+                    // USER INPUT 
+                    userResponse = Console.ReadLine();
+                    // validate user input
+                    answer = int.TryParse(userResponse, out numberOfDataPoints);
+
+                }
             }
-
-            DisplayMenuPrompt("Talent Show Menu");
+            // RETURN VALUE
+            return numberOfDataPoints;
         }
 
-        static void SingASong(Finch finchRobot)
-        {
-            Console.CursorVisible = false;
-
-            DisplayScreenHeader("Sing a Song!");
-
-            Console.WriteLine("\tThe Finch robot will now sing a small tune!");
-            DisplayContinuePrompt();
-
-            finchRobot.noteOn(1600);
-            finchRobot.wait(1000);
-            finchRobot.noteOff();
-            finchRobot.noteOn(800);
-            finchRobot.wait(1000);
-            finchRobot.noteOff();
-            finchRobot.noteOn(650);
-            finchRobot.wait(1000);
-            finchRobot.noteOff();
-            finchRobot.noteOn(1050);
-            finchRobot.wait(1000);
-            finchRobot.noteOff();
-            finchRobot.wait(1000);
-
-
-            DisplayMenuPrompt("Talent Show Menu");
-        }
 
         #endregion
-
         #region FINCH ROBOT MANAGEMENT
 
         /// <summary>
@@ -364,7 +509,7 @@ namespace Project_FinchControl
 
             finchRobot.disConnect();
 
-            Console.WriteLine("\tThe Finch robot is now disconnected.");
+            Console.WriteLine("\tThe Finch robot is now disconnect.");
 
             DisplayMenuPrompt("Main Menu");
         }
@@ -388,7 +533,7 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
 
             robotConnected = finchRobot.connect();
-
+            finchRobot.connect();
             // TODO test connection and provide user feedback - text, lights, sounds
 
             DisplayMenuPrompt("Main Menu");
@@ -472,5 +617,5 @@ namespace Project_FinchControl
         }
 
         #endregion
-    
-
+    }
+}
