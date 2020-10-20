@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FinchAPI;
+// 
 
 namespace Project_FinchControl
 {
@@ -13,9 +14,9 @@ namespace Project_FinchControl
     // Description: Starter solution with the helper methods,
     //              opening and closing screens, and the menu
     // Application Type: Console
-    // Author: Velis, John
+    // Author: Vos, Conner
     // Dated Created: 1/22/2020
-    // Last Modified: 1/25/2020
+    // Last Modified: 10/20/2020
     //
     // **************************************************
 
@@ -92,7 +93,7 @@ namespace Project_FinchControl
                         break;
 
                     case "d":
-
+                        LightAlarmDisplayMenuScreen(finchRobot);
                         break;
 
                     case "e":
@@ -284,6 +285,287 @@ namespace Project_FinchControl
                 DisplayMenuPrompt("Talent Show Menu");
             }
         }
+        #endregion
+
+        #region Alarm System
+        /// <summary>
+        /// ALARM SYSTEM MENU
+        /// </summary>
+        /// <param name="finchRobot"></param>
+        static void LightAlarmDisplayMenuScreen(Finch finchRobot)
+        { 
+            bool quitMenu = false;
+            string menuChoice = "";
+            // Variables
+            string sensorsToMonitor = "";
+            string rangeType = "";
+            int minMaxValue = 0;
+            int timeToMonitor = 0;
+
+
+            do
+            {
+                DisplayScreenHeader("Alarm System Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Set Sensors To Monitor");
+                Console.WriteLine("\tb) Set Range Type");
+                Console.WriteLine("\tc) Set Minimum/Maximum Threshold Value"); 
+                Console.WriteLine("\td) Set Time to Monitor");
+                Console.WriteLine("\te) Set Alarm");
+                Console.WriteLine("\tq) Return to main menu");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        // User Validation NEEDED
+                        sensorsToMonitor = LightAlarmDisplaySetSensorsToMonitor();
+                        break;
+
+                    case "b":
+                        rangeType = LightAlarmDisplaySetRangeType();
+                        break;
+
+                    case "c":
+                        minMaxValue = LightAlarmSetMinMaxThreshold(rangeType, finchRobot);
+                        break;
+
+                    case "d":
+                        timeToMonitor = LightAlarmSetTime();
+                        break;
+
+                    case "e":
+                        lightAlarmSetAlarm(finchRobot, sensorsToMonitor, rangeType, minMaxValue, timeToMonitor);
+                        break;
+                    case "q":
+                        quitMenu = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+
+                }
+            } while (!quitMenu);
+        }
+
+        private static void lightAlarmSetAlarm
+            (Finch finchRobot, 
+            string sensorsToMonitor, 
+            string rangeType, 
+            int minMaxValue, 
+            int timeToMonitor)
+        {
+
+            int secondsElapsed = 0;
+            bool thresholdExceeded = false;
+            int currentLightSensorValue = 0;
+            DisplayScreenHeader("Set Alarm");
+
+            Console.WriteLine($"\tSensors to Monitor: {sensorsToMonitor}");
+            Console.WriteLine($"\tRange Type: {rangeType}");
+            Console.WriteLine($"\tMin/Max Value: {minMaxValue}");
+            Console.WriteLine($"\tTime To Monitor: {timeToMonitor}");
+            Console.WriteLine();
+            Console.WriteLine("Press any Key to Begin: ");
+            Console.ReadKey();
+            Console.WriteLine();
+
+
+            while ((secondsElapsed < timeToMonitor) && !thresholdExceeded)
+            {
+
+                switch (sensorsToMonitor)
+                {
+                    case "left":
+                        currentLightSensorValue = finchRobot.getLeftLightSensor();
+                        break;
+
+                    case "right":
+                        currentLightSensorValue = finchRobot.getRightLightSensor();
+                        break;
+
+                    case "both":
+
+                        currentLightSensorValue = (finchRobot.getLeftLightSensor() + finchRobot.getRightLightSensor()) / 2;
+                        break;
+
+                }
+
+                switch (rangeType)
+                {
+                    case "minimum":
+                        if (currentLightSensorValue < minMaxValue)
+                        {
+
+                            thresholdExceeded = true;
+
+                        }
+                        break;
+
+                    case "maximum":
+                        if (currentLightSensorValue > minMaxValue)
+                        {
+
+                            thresholdExceeded = true;
+
+                        }
+                        break;
+                }
+                finchRobot.wait(1000);
+                secondsElapsed++;
+            }
+
+            if (thresholdExceeded)
+            {
+                finchRobot.setLED(0, 255, 0);
+                finchRobot.noteOn(2000);
+                finchRobot.wait(1000);
+                finchRobot.noteOn(1600);
+                finchRobot.wait(500);
+                finchRobot.noteOn(800);
+                finchRobot.wait(1000);
+                finchRobot.noteOff();
+                finchRobot.setLED(0, 0, 0);
+                Console.WriteLine($"The {rangeType} threshold value of {minMaxValue} has been exceeded by the current light sensors with a value of {currentLightSensorValue}.");
+
+            }
+            else
+            {
+                finchRobot.setLED(255, 0, 0);
+                finchRobot.wait(3000);
+                finchRobot.setLED(0, 0, 0);
+                Console.WriteLine($"The {rangeType} threshold value of {minMaxValue} was not exceeded.");
+            }
+
+            DisplayMenuPrompt("Light Alarm");
+        }
+
+        static int LightAlarmSetTime()
+        {
+            int timeToMonitor = 0;
+            bool valid = false;
+            string answer;
+            DisplayScreenHeader("Time to Monitor");
+
+
+            // user validation
+            while (valid != true)
+            {
+                Console.WriteLine("Time to monitor: ");
+                answer = Console.ReadLine();
+                if (int.TryParse(answer, out timeToMonitor) != true)
+                {
+                    Console.WriteLine("Error! please enter a valid number!\n");
+                }
+                else
+                {
+                    valid = true;
+                    break;
+                }
+            }
+            DisplayMenuPrompt("Light Alarm");
+            return timeToMonitor;
+        }
+        static int LightAlarmSetMinMaxThreshold(string rangeType, Finch finchRobot)
+        {
+            int minMaxValue;
+            minMaxValue = 0;
+            bool valid = false;
+            string answer;
+            DisplayScreenHeader("Minimum/Maximum Threshold");
+
+            Console.WriteLine($"\tLeft Light Sensor Ambient Value: {finchRobot.getLeftLightSensor()}");
+            Console.WriteLine($"\tRight Light Sensor Ambient Value: {finchRobot.getRightLightSensor()}");
+            Console.WriteLine();
+            // user validation
+            while (valid != true)
+            {
+                Console.WriteLine($"Enter the {rangeType} Light Sensor Value:");
+                answer = Console.ReadLine();
+                if (int.TryParse(answer, out minMaxValue) != true)
+                {
+                    Console.WriteLine("Error! please enter a valid number!\n");
+                }
+                else
+                {
+                    valid = true;
+                    break;
+                }
+            }
+                DisplayMenuPrompt("Light Alarm");
+
+            return minMaxValue;
+        }
+
+        /// <summary>
+        /// Gets input to see which sensor to monitor!
+        /// </summary>
+        /// <returns>User selected sensor</returns>
+        static string LightAlarmDisplaySetSensorsToMonitor()
+        {
+            string sensorsToMonitor;
+            sensorsToMonitor = null;
+            bool valid = false;
+            string[] answers = { "left", "right", "both" };
+            DisplayScreenHeader("Sensors To Monitor");
+            // DETECTS TO SEE IF ANSWER IS VALID
+           while (valid != true)
+            {
+                Console.WriteLine("\tSensors to Monitor [left, right, both]:");
+                sensorsToMonitor = Console.ReadLine();
+                if (answers.Contains(sensorsToMonitor) != true)
+                {
+                    Console.WriteLine("Error: Answer is not valid!\nPlease Select a Valid Answer!");
+                }
+                else
+                {
+                    valid = true;
+                    break;
+                }
+            }
+            DisplayMenuPrompt("Light Alarm");
+
+            return sensorsToMonitor;
+        }
+
+        static string LightAlarmDisplaySetRangeType()
+        {
+            string rangeType;
+            rangeType = null;
+            bool valid = false;
+            string[] answers = { "minimum", "maximum" };
+
+            DisplayScreenHeader("Set Range Type");
+            // DETECTS TO SEE IF ANSWER IS VALID
+            while (valid != true)
+            {
+                Console.WriteLine("\tSet Range Type[Minimum or Maximum]:");
+                rangeType = Console.ReadLine();
+                if (answers.Contains(rangeType) != true)
+                {
+                    Console.WriteLine("Error: Answer is not valid!\nPlease Select a Valid Answer!");
+                }
+                else
+                {
+                    valid = true;
+                    break;
+                }
+            }
+            DisplayMenuPrompt("Light Alarm");
+
+            return rangeType;
+        }
+
         #endregion
 
         #region DATA RECORDER
