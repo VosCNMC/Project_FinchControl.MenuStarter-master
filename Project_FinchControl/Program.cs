@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using FinchAPI;
-// 
 
 namespace Project_FinchControl
 {
@@ -17,7 +16,7 @@ namespace Project_FinchControl
     // Application Type: Console
     // Author: Vos, Conner
     // Dated Created: 1/22/2020
-    // Last Modified: 10/20/2020
+    // Last Modified: 11/06/2020
     //
     // **************************************************
 
@@ -48,11 +47,184 @@ namespace Project_FinchControl
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            DisplayLoginRegister();
             SetTheme();
-
-            DisplayWelcomeScreen();
             DisplayMenuScreen();
             DisplayClosingScreen();
+        }
+        /// <summary>
+        /// Log-in screen, asks users if they have an account in this program
+        /// </summary>
+        static void DisplayLoginRegister()
+        {
+            bool responseValid = false;
+            string userResponse;
+            DisplayScreenHeader("Login/Register:");
+            do
+            {
+                Console.WriteLine("Have you been registered with this program? ( yes | no)");
+                userResponse = Console.ReadLine();
+                if (userResponse.ToLower() == "yes")
+                {
+                    responseValid = true;
+                    break;
+
+                }
+                else if (userResponse.ToLower() == "no")
+                {
+                    DisplayRegisterUser();
+                    responseValid = true;
+                    break;
+
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Error!\nPlease reply with yes or no!\n");
+                }
+            } while (responseValid != true);
+            DisplayLogin();
+        }
+        /// <summary>
+        /// User login screen
+        /// </summary>
+        static void DisplayLogin()
+        {
+            string userName;
+            string password;
+            bool validLogin = false ;
+
+            do
+            {
+                DisplayScreenHeader("Login");
+
+                Console.WriteLine();
+                Console.Write("\tPlease enter your user name: ");
+                userName = Console.ReadLine();
+                Console.Write("\tPlease enter your password: ");
+                password = Console.ReadLine();
+
+                validLogin = IsValidLoginInfo(userName , password);
+
+                Console.WriteLine();
+                if (validLogin == true)
+                {
+                    Console.WriteLine("\tYou are now logged in!");
+                }
+                else 
+                {
+                    Console.WriteLine("\tSorry, it appears either your password or user name is incorrect!");
+                    Console.WriteLine("\tPlease try again!");
+                }
+                DisplayContinuePrompt();
+                
+                    Console.Clear();
+
+            } while (validLogin != true);
+        }
+        /// <summary>
+        /// Checks to see if user input is indeed valid
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        static bool IsValidLoginInfo(string userName, string password)
+        {
+            List<(string userName, string password)> registeredLoginInfo = new List<(string userName, string password)>();
+            bool validUser = false;
+
+            registeredLoginInfo = ReadLoginInfoData();
+
+            ///
+            /// Loops through list of registered users and checks each one
+            ///
+            foreach ((string userName, string password) userLoginInfo in registeredLoginInfo)
+            {
+                if ((userLoginInfo.userName == userName) && (userLoginInfo.password == password))
+                {
+                    validUser = true;
+                    break;
+                }
+            }
+
+            return validUser;
+        }
+        /// <summary>
+        /// Reads login info data
+        /// </summary>
+        /// <returns></returns>
+        static List<(string userName, string password)> ReadLoginInfoData()
+        {
+            string dataPath = @"D:\C#\Project_FinchControl.MenuStarter-master\Project_FinchControl\Data\Logins.txt";
+
+            string[] loginInfoArray;
+            (string userName, string password) loginInfoTuple;
+
+            List<(string userName, string password)> registeredUserLoginInfo = new List<(string userName, string password)>();
+            loginInfoArray = File.ReadAllLines(dataPath);
+
+            //
+            // Loop through the array
+            // splitting the user name and password into tuple 
+            // add tuple to the list
+            //
+            foreach (string loginInfoText in loginInfoArray)
+            {
+                loginInfoArray = loginInfoText.Split(',');
+
+                loginInfoTuple.userName = loginInfoArray[0];
+                loginInfoTuple.password = loginInfoArray[1];
+
+                registeredUserLoginInfo.Add(loginInfoTuple);
+            }
+
+            return registeredUserLoginInfo;
+        }
+
+        /// <summary>
+        /// If user doesn't have an account, they make one here
+        /// </summary>
+        private static void DisplayRegisterUser()
+        {
+            string userName;
+            string password;
+            bool completed = false;
+
+            DisplayScreenHeader("Registering A New Account");
+            while (completed != true) 
+            {
+                Console.Write("\tPlease enter your chosen user name!: ");
+                userName = Console.ReadLine();
+                Console.Write("\tPlease enter your chosen password!: ");
+                password = Console.ReadLine();
+                Console.WriteLine($"\nSo, your chosen name is: {userName}\nChosen password is: {password}");
+                Console.WriteLine("Is this information correct? (yes | no)");
+                if (Console.ReadLine().ToLower() == "yes")
+                {
+                    completed = true;
+                    WriteLoginInfoData(userName, password);
+                    Console.WriteLine("Your log-in information has now been saved.");
+                    DisplayContinuePrompt();
+                }
+                else 
+                {
+                    Console.Clear();
+                }
+            }
+        }
+        /// <summary>
+        /// This Method writes down new user info into a text file
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        static void WriteLoginInfoData(string userName, string password)
+        {
+            string dataPath = @"D:\C#\Project_FinchControl.MenuStarter-master\Project_FinchControl\Data\Logins.txt";
+            string loginInfoText;
+
+            loginInfoText = userName + "," + password + "\n";
+
+            File.AppendAllText(dataPath, loginInfoText);
         }
 
         /// <summary>
